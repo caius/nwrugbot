@@ -1,37 +1,37 @@
 package signalstatus
 
 import (
-  "time"
-  "net/http"
-  "encoding/json"
-  "io/ioutil"
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"time"
 )
 
 var StatusURL string = "http://status.37signals.com/status.json"
 
 type StatusCheck struct {
-  Status StatusBody
+	Status StatusBody
 }
 
 type StatusBody struct {
-  Mood string
-  Description string
-  UpdatedAt time.Time
+	Mood        string
+	Description string
+	UpdatedAt   time.Time
 }
 
 type StatusResponse struct {
-  Status StatusBody
+	Status StatusBody
 }
 
 func Status() (StatusCheck, error) {
 	sc := StatusCheck{}
 
-  err := sc.Run()
-  if err != nil {
-    return StatusCheck{}, err
-  }
+	err := sc.Run()
+	if err != nil {
+		return StatusCheck{}, err
+	}
 
-  return sc, nil
+	return sc, nil
 }
 
 func (sc *StatusCheck) Run() error {
@@ -47,17 +47,17 @@ func (sc *StatusCheck) Run() error {
 		return err
 	}
 
-  status_response := StatusResponse{}
-  err = json.Unmarshal(body, &status_response)
-  if err != nil {
-    return err
-  }
+	status_response := StatusResponse{}
+	err = json.Unmarshal(body, &status_response)
+	if err != nil {
+		return err
+	}
 
-  sc.Status = status_response.Status
+	sc.Status = status_response.Status
 
-  return nil
+	return nil
 }
 
 func (sc *StatusCheck) OK() bool {
-  return sc.Status.Mood == "good"
+	return sc.Status.Mood == "good"
 }

@@ -7,14 +7,35 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"signalstatus"
 	"strings"
 )
 
+var GitCommit string
+var BuiltBy string
+
 func main() {
-	fmt.Printf("Version: %s\nBuilt by: %s\n", gobot.GitCommit, gobot.BuiltBy) // FU GO
+	fmt.Printf("Version: %s\nBuilt by: %s\n", GitCommit, BuiltBy) // FU GO
 
 	bot := gobot.Gobot{Name: "nwrugbot", Room: "#caius", Server: "irc.freenode.net:6667"}
 	bot.Plugins = make(map[string]func(p gobot.Privmsg))
+
+	bot.Match("37status", func(privmsg gobot.Privmsg) {
+		status, err := signalstatus.Status()
+		if err != nil {
+			panic(err)
+		}
+
+		var reply string
+
+		if status.OK() {
+			reply = fmt.Sprintf("OK: %s\n", status.Status.Description)
+		} else {
+			reply = fmt.Sprintf("Uh oh: %s\n", status.Status.Description)
+		}
+
+		privmsg.Msg(reply)
+	})
 
 	bot.Match("hullo", func(privmsg gobot.Privmsg) {
 		privmsg.Msg("Oh hai!")
@@ -98,14 +119,14 @@ func main() {
 	bot.Match("version", func(privmsg gobot.Privmsg) {
 		reply := "My current version is"
 
-		if gobot.GitCommit != "" {
-			reply = fmt.Sprintf("%s %s", reply, gobot.GitCommit)
+		if GitCommit != "" {
+			reply = fmt.Sprintf("%s %s", reply, GitCommit)
 		} else {
 			reply = fmt.Sprintf("%s unknown", reply)
 		}
 
-		if gobot.BuiltBy != "" {
-			reply = fmt.Sprintf("%s and I was built by %s", reply, gobot.BuiltBy)
+		if BuiltBy != "" {
+			reply = fmt.Sprintf("%s and I was built by %s", reply, BuiltBy)
 		}
 
 		privmsg.Msg(reply)
@@ -202,7 +223,6 @@ func main() {
 	// TODO: last
 	// TODO: roll
 	// TODO: ACTION pokes .+
-	// TODO: 37status
 	// TODO: hubstatus
 	// TODO: nextmeet
 	// TODO: ACTION staabs
