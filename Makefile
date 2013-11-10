@@ -4,9 +4,9 @@ THIS_DIR:=$(shell cd $(dir $(THIS_MAKEFILE_PATH)); pwd)
 GIT_COMMIT = $(shell git rev-parse --short HEAD)
 GIT_STATUS = $(shell test -n "`git status --porcelain`" && echo "+CHANGES")
 
-COMPONENTS = nwrugbot
+COMPONENTS = nwrugbot signalstatus
 
-BUILD_OPTIONS = -ldflags "-X gobot.GitCommit $(GIT_COMMIT)$(GIT_STATUS) -X gobot.BuiltBy $(shell whoami) -w"
+BUILD_OPTIONS = -ldflags "-X GitCommit $(GIT_COMMIT)$(GIT_STATUS) -X BuiltBy $(shell whoami) -w"
 
 #
 # Build Targets, for development
