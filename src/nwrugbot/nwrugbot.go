@@ -247,7 +247,6 @@ func main() {
 	})
 
 	// TODO: last
-	// TODO: roll
 	// TODO: ACTION pokes .+
 	// TODO: hubstatus
 	// TODO: nextmeet
