@@ -1,13 +1,16 @@
 package main
 
 import (
+	"crypto/rand"
 	"fmt"
 	"github.com/caius/gobot"
 	"io/ioutil"
 	"log"
+	"math/big"
 	"net/http"
 	"regexp"
 	"signalstatus"
+	"strconv"
 	"strings"
 )
 
@@ -218,6 +221,29 @@ func main() {
 		fmt.Printf("title: %s\n", title)
 
 		privmsg.Msg(title)
+	})
+
+	bot.Match("/^roll (\\d{1,})$/", func(privmsg gobot.Privmsg) {
+		msg := privmsg.Message
+		fmt.Printf("!!!!!!!!! Got a roll! %s\n", msg)
+
+		total_sides_string := strings.TrimPrefix(msg, "roll ")
+		total_sides, err := strconv.Atoi(total_sides_string)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		i, err := rand.Int(rand.Reader, big.NewInt(int64(total_sides)))
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		// We'll be 0-i, so add 1 to turn into dice faces
+		i.Add(i, big.NewInt(1))
+
+		privmsg.Msg(i.String())
 	})
 
 	// TODO: last
