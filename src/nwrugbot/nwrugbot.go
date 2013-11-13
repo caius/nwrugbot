@@ -194,7 +194,7 @@ func main() {
 		fmt.Printf("Extracted '%s'\n", url)
 
 		// We might extract `www.google.com` or `bit.ly/something` so we need to prepend http:// in that case
-		if !strings.HasPrefix(url, "http://") {
+		if !regexp.MustCompile("^https?:\\/\\/").MatchString(url) {
 			url = fmt.Sprintf("http://%s", url)
 		}
 
