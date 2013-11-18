@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"github.com/caius/gobot"
+	"githubstatus"
 	"io/ioutil"
 	"log"
 	"math/big"
@@ -20,7 +21,7 @@ var BuiltBy string
 func main() {
 	fmt.Printf("Version: %s\nBuilt by: %s\n", GitCommit, BuiltBy) // FU GO
 
-	bot := gobot.Gobot{Name: "nwrugbot", Room: "#caius", Server: "irc.freenode.net:6667"}
+	bot := gobot.Gobot{Name: "caiusbot", Room: "#caius", Server: "irc.freenode.net:6667"}
 	bot.Plugins = make(map[string]func(p gobot.Privmsg))
 
 	bot.Match("37status", func(privmsg gobot.Privmsg) {
@@ -38,6 +39,17 @@ func main() {
 		}
 
 		privmsg.Msg(reply)
+	})
+
+	bot.Match("hubstatus", func(privmsg gobot.Privmsg) {
+		status, err := githubstatus.Status()
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println(status)
+
+		privmsg.Msg(fmt.Sprintf("Github: %s - %s", status.Mood, status.Description))
 	})
 
 	bot.Match("hullo", func(privmsg gobot.Privmsg) {
@@ -248,7 +260,6 @@ func main() {
 
 	// TODO: last
 	// TODO: ACTION pokes .+
-	// TODO: hubstatus
 	// TODO: nextmeet
 	// TODO: ACTION staabs
 	// TODO: artme
