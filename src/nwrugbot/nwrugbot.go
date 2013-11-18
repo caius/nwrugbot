@@ -21,7 +21,7 @@ var BuiltBy string
 func main() {
 	fmt.Printf("Version: %s\nBuilt by: %s\n", GitCommit, BuiltBy) // FU GO
 
-	bot := gobot.Gobot{Name: "nwrugbot", Room: "#caius", Server: "irc.freenode.net:6667"}
+	bot := gobot.Gobot{Name: "caiusbot", Room: "#caius", Server: "irc.freenode.net:6667"}
 	bot.Plugins = make(map[string]func(p gobot.Privmsg))
 
 	bot.Match("37status", func(privmsg gobot.Privmsg) {
