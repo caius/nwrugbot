@@ -6,7 +6,7 @@ GIT_STATUS = $(shell test -n "`git status --porcelain`" && echo "+CHANGES")
 
 COMPONENTS = nwrugbot signalstatus
 
-BUILD_OPTIONS = -ldflags "-X GitCommit $(GIT_COMMIT)$(GIT_STATUS) -X BuiltBy $(shell whoami) -w"
+BUILD_OPTIONS = -ldflags "-X main.GitCommit $(GIT_COMMIT)$(GIT_STATUS) -X main.BuiltBy $(shell whoami) -w"
 
 #
 # Build Targets, for development
