@@ -4,7 +4,7 @@ THIS_DIR:=$(shell cd $(dir $(THIS_MAKEFILE_PATH)); pwd)
 GIT_COMMIT = $(shell git rev-parse --short HEAD)
 GIT_STATUS = $(shell test -n "`git status --porcelain`" && echo "+CHANGES")
 
-COMPONENTS = nwrugbot signalstatus
+COMPONENTS = nwrugbot signalstatus githubstatus
 
 BUILD_OPTIONS = -ldflags "-X main.GitCommit $(GIT_COMMIT)$(GIT_STATUS) -X main.BuiltBy $(shell whoami) -w"
 
