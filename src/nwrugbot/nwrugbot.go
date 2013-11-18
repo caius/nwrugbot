@@ -6,7 +6,6 @@ import (
 	"github.com/caius/gobot"
 	"githubstatus"
 	"io/ioutil"
-	"log"
 	"math/big"
 	"net/http"
 	"regexp"
@@ -27,7 +26,7 @@ func main() {
 	bot.Match("37status", func(privmsg gobot.Privmsg) {
 		status, err := signalstatus.Status()
 		if err != nil {
-			panic(err)
+			privmsg.Error(err)
 		}
 
 		var reply string
@@ -44,7 +43,7 @@ func main() {
 	bot.Match("hubstatus", func(privmsg gobot.Privmsg) {
 		status, err := githubstatus.Status()
 		if err != nil {
-			panic(err)
+			privmsg.Error(err)
 		}
 
 		fmt.Println(status)
@@ -216,13 +215,13 @@ func main() {
 		// TODO: handle PDF and non-HTML content
 		resp, err := http.Get(url)
 		if err != nil {
-			log.Fatal(err)
+			privmsg.Error(err)
 		}
 
 		defer resp.Body.Close()
 		raw_body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			log.Fatal(err)
+			privmsg.Error(err)
 		}
 
 		body := string(raw_body)
@@ -242,13 +241,13 @@ func main() {
 		total_sides_string := strings.TrimPrefix(msg, "roll ")
 		total_sides, err := strconv.Atoi(total_sides_string)
 		if err != nil {
-			log.Fatal(err)
+			privmsg.Error(err)
 			return
 		}
 
 		i, err := rand.Int(rand.Reader, big.NewInt(int64(total_sides)))
 		if err != nil {
-			log.Fatal(err)
+			privmsg.Error(err)
 			return
 		}
 
