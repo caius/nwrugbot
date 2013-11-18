@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"time"
 )
 
 var StatusURL string = "http://status.37signals.com/status.json"
@@ -16,11 +15,7 @@ type StatusCheck struct {
 type StatusBody struct {
 	Mood        string
 	Description string
-	UpdatedAt   time.Time
-}
-
-type StatusResponse struct {
-	Status StatusBody
+	UpdatedAt   string
 }
 
 func Status() (StatusCheck, error) {
@@ -47,13 +42,10 @@ func (sc *StatusCheck) Run() error {
 		return err
 	}
 
-	status_response := StatusResponse{}
-	err = json.Unmarshal(body, &status_response)
+	err = json.Unmarshal(body, &sc)
 	if err != nil {
 		return err
 	}
-
-	sc.Status = status_response.Status
 
 	return nil
 }
