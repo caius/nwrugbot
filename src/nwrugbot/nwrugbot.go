@@ -27,6 +27,7 @@ func main() {
 		status, err := signalstatus.Status()
 		if err != nil {
 			privmsg.Error(err)
+      return
 		}
 
 		var reply string
@@ -44,6 +45,7 @@ func main() {
 		status, err := githubstatus.Status()
 		if err != nil {
 			privmsg.Error(err)
+      return
 		}
 
 		fmt.Println(status)
@@ -216,12 +218,14 @@ func main() {
 		resp, err := http.Get(url)
 		if err != nil {
 			privmsg.Error(err)
+      return
 		}
 
 		defer resp.Body.Close()
 		raw_body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			privmsg.Error(err)
+      return
 		}
 
 		body := string(raw_body)
