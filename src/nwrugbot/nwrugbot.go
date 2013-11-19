@@ -227,11 +227,14 @@ func main() {
 		body := string(raw_body)
 
 		title_regexp := regexp.MustCompile("<title>([^<]+)</title>")
-		title := title_regexp.FindStringSubmatch(body)[1]
+		title := title_regexp.FindStringSubmatch(body)
+    if title == nil {
+      return
+    }
 
-		fmt.Printf("title: %s\n", title)
+		fmt.Printf("title: %s\n", title[1])
 
-		privmsg.Msg(title)
+		privmsg.Msg(title[1])
 	})
 
 	bot.Match("/^roll (\\d{1,})$/", func(privmsg gobot.Privmsg) {
