@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/rand"
+	"flag"
 	"fmt"
 	"github.com/caius/gobot"
 	"githubstatus"
@@ -18,10 +19,16 @@ var GitCommit string
 var BuiltBy string
 
 func main() {
+	name := flag.String("name", "caiusbot", "name of the bot")
+	room := flag.String("room", "#caius", "room the bot should join")
+	server := flag.String("server", "irc.freenode.net:6667", "server the bot should join")
+
+	flag.Parse()
+
 	bot := gobot.Gobot()
-	bot.Name = "caiusbot"
-	bot.Room = "#caius"
-	bot.Server = "irc.freenode.net:6667"
+	bot.Name = *name
+	bot.Room = *room
+	bot.Server = *server
 
 	bot.MatchString("37status", func(privmsg gobot.Privmsg) {
 		status, err := signalstatus.Status()
