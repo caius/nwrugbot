@@ -2,13 +2,14 @@ package main
 
 import (
 	"crypto/rand"
-	"flag"
 	"fmt"
 	"github.com/caius/gobot"
+	"github.com/jessevdk/go-flags"
 	"githubstatus"
 	"io/ioutil"
 	"math/big"
 	"net/http"
+	"os"
 	"regexp"
 	"signalstatus"
 	"strconv"
@@ -18,17 +19,26 @@ import (
 var GitCommit string
 var BuiltBy string
 
-func main() {
-	name := flag.String("name", "caiusbot", "name of the bot")
-	room := flag.String("room", "#caius", "room the bot should join")
-	server := flag.String("server", "irc.freenode.net:6667", "server the bot should join")
+type CLIOptions struct {
+	Name   string `short:"n" long:"name" default:"caiusbot" optional:true`
+	Room   string `short:"r" long:"room" default:"#caius" optional:true`
+	Server string `short:"s" long:"server" default:"irc.freenode.net" optional:true`
+	Port   int    `short:"p" long:"port" default:"6667" optional:true`
+}
 
-	flag.Parse()
+func main() {
+	opts := CLIOptions{}
+	_, err := flags.Parse(&opts)
+	if err != nil {
+		// Something went wrong, but it may well just be --help
+		os.Exit(1)
+	}
 
 	bot := gobot.Gobot()
-	bot.Name = *name
-	bot.Room = *room
-	bot.Server = *server
+	bot.Name = opts.Name
+	bot.Room = opts.Room
+	bot.Server = opts.Server
+	bot.Port = opts.Port
 
 	bot.MatchString("37status", func(privmsg gobot.Privmsg) {
 		status, err := signalstatus.Status()
