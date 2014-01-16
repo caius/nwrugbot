@@ -50,4 +50,10 @@ submodules:
 clean:
 	find {bin,pkg} -mindepth 1 -not -name '.gitkeep' -delete
 
+#
+# Installs a linux-32 bit version for production
+#
+production:
+	GOPATH=$(THIS_DIR) GOOS=linux GOARCH=386 CGO_ENABLED=0 go install $(BUILD_OPTIONS) nwrugbot
+
 .PHONY: clean submodules fmt run install test
