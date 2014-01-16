@@ -19,6 +19,8 @@ import (
 var GitCommit string
 var BuiltBy string
 
+var httpRegexpString = "(?i)\\b((?:https?://|www\\d{0,3}[.]|[a-z0-9.\\-]+[.][a-z]{2,4}/)(?:[^\\s()<>]+|\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\))+(?:\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’]))"
+
 type CLIOptions struct {
 	Name   string `short:"n" long:"name" default:"caiusbot" optional:true`
 	Room   string `short:"r" long:"room" default:"#caius" optional:true`
@@ -210,11 +212,11 @@ func main() {
 
 	// Listens to channel conversation and inserts title of any link posted, following redirects
 	// `And then I went to www.caius.name` => `gobot: Caius Durling &raquo; Profile`
-	bot.MatchString(".", func(privmsg gobot.Privmsg) {
+	bot.MatchString(httpRegexpString, func(privmsg gobot.Privmsg) {
 		msg := privmsg.Message
 
 		// Regexp from http://daringfireball.net/2010/07/improved_regex_for_matching_urls - Ta gruber!
-		url_regexp := regexp.MustCompile("(?i)\\b((?:https?://|www\\d{0,3}[.]|[a-z0-9.\\-]+[.][a-z]{2,4}/)(?:[^\\s()<>]+|\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\))+(?:\\(([^\\s()<>]+|(\\([^\\s()<>]+\\)))*\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’]))")
+		url_regexp := regexp.MustCompile(httpRegexpString)
 		url := url_regexp.FindString(msg)
 
 		if url == "" {
@@ -231,7 +233,6 @@ func main() {
 		fmt.Printf("GET %s\n", url)
 
 		// Attempt a GET request to get the page title
-		// TODO: handle PDF and non-HTML content
 		resp, err := http.Get(url)
 		if err != nil {
 			privmsg.Error(err)
@@ -239,6 +240,21 @@ func main() {
 		}
 
 		defer resp.Body.Close()
+
+		// Check we got back text/html, otherwise bail out
+		htmlPresent := false
+		headers := resp.Header["Content-Type"]
+		for i := range headers {
+			if strings.Contains(strings.ToLower(headers[i]), "text/html") {
+				htmlPresent = true
+			}
+		}
+
+		if htmlPresent == false {
+			fmt.Println("Didn't find HTML, bailing")
+			return
+		}
+
 		raw_body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			privmsg.Error(err)
